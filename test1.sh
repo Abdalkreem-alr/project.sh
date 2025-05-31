@@ -8,8 +8,10 @@ NC='\033[0m'
 usage() {
     echo -e "${GREEN}Usage: $0 [-r domain] [-n target] [-v target] [-a target]${NC}"
     echo "  -r domain    Run Recon (Subdomain Enumeration)"
+    echo "  -w domain    scan endpoin"
     echo "  -n target    Scan for open ports and running services"
     echo "  -v target    Search for known vulnerabilities"
+    echo "  -l domain    Filter live domains using httpx"
     echo "  -a target    Run all: Recon + Services + Vulnerabilities"
     exit 1
 }
@@ -43,11 +45,33 @@ recon() {
 
     # دمج النتائج
     echo "[*] Merging and deduplicating results..."
-    cat "$output_dir/subfinder.txt" "$output_dir/crt.txt" | sort -u > "$output_dir/subdomains.txt"
+        cat "$output_dir/subfinder.txt" "$output_dir/crt.txt" | sort -u > "$output_dir/subdomains.txt"
     echo -e "${GREEN}[+] Done! Results saved to subdomains.txt${NC}"
 
-        # حذف المؤقتات
+    # حذف المؤقتات
     rm -f "$output_dir/subfinder.txt" "$output_dir/crt.txt"
+}
+
+filter_live_domains() {
+    domain=$1
+    input_file=~/recon/$domain/subdomain/subdomains.txt
+    output_file=~/recon/$domain/subdomain/live.txt
+
+    echo -e "${GREEN}[+] Filtering live domains for $domain using httpx...${NC}"
+
+    if ! command -v httpx &>/dev/null; then
+        echo -e "${RED}[-] httpx not found. Please install it.${NC}"
+        return 1
+    fi
+
+    if [[ ! -s "$input_file" ]]; then
+        echo -e "${RED}[-] Subdomains file is missing or empty: $input_file${NC}"
+        return 1
+    fi
+
+    httpx1 -silent -l "$input_file" -o "$output_file"
+
+    echo -e "${GREEN}[+] Live domains saved to $output_file${NC}"
 }
 gather_endpoints() {
     domain=$1
@@ -92,19 +116,22 @@ find_vulnerabilities() {
     target=$1
     echo -e "${GREEN}[+] Scanning $target for known vulnerabilities...${NC}"
     nmap -sV --script vuln "$target"
-    }
+}
 
 # التحقق من المعطيات
 if [[ $# -lt 2 ]]; then
     usage
 fi
 
-while getopts ":r:n:v:a:w:" opt; do
+while getopts ":r:n:v:a:w:l:" opt; do
     case $opt in
         r)
             recon "$OPTARG"
             ;;
-        n)
+        l)
+            filter_live_domains "$OPTARG"
+            ;;
+       n)
             scan_services "$OPTARG"
             ;;
         v)
@@ -112,7 +139,7 @@ while getopts ":r:n:v:a:w:" opt; do
             ;;
 
         w)
-            gather_enpoints "$OPTARG"
+            gather_endpoints "$OPTARG"
              ;;
         a)
             domain="$OPTARG"
