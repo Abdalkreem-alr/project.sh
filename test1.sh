@@ -41,11 +41,11 @@ recon() {
 
     # تنفيذ crt.sh
     echo "[*] Using crt.sh..."
-    curl -s "https://crt.sh/?q=%25.$domain&output=json" | jq -r '.[].name_value' | sort -u > "$output_d>
+    curl -s "https://crt.sh/?q=%25.$domain&output=json" | jq -r '.[].name_value' | sort -u > "$output_dir/crt.txt"
 
     # دمج النتائج
     echo "[*] Merging and deduplicating results..."
-        cat "$output_dir/subfinder.txt" "$output_dir/crt.txt" | sort -u > "$output_dir/subdomains.txt"
+    cat "$output_dir/subfinder.txt" "$output_dir/crt.txt" | sort -u > "$output_dir/subdomains.txt"
     echo -e "${GREEN}[+] Done! Results saved to subdomains.txt${NC}"
 
     # حذف المؤقتات
@@ -131,7 +131,7 @@ while getopts ":r:n:v:a:w:l:" opt; do
         l)
             filter_live_domains "$OPTARG"
             ;;
-       n)
+        n)
             scan_services "$OPTARG"
             ;;
         v)
