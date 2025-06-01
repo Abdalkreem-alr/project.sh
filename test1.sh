@@ -5,6 +5,21 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
+print_banner() {
+    echo -e "${GREEN}"
+    echo "██████╗   ██████╗       ██████╗        ██╗    ███████╗  ██████╗  ████████╗"
+    echo "██╔══██╗ ██╔   ██╔     ██╔═══██╗       ██║    ██╔════╝ ██╔════╝  ╚══██╔══╝"
+    echo "██████╔╝ ██╔██╔██╔     ██║   ██║       ██║    █████╗   ██║          ██║   "
+    echo "██╔═══╝  ██╔    ██╔    ██║   ██║       ██║    ██╔══╝   ██║          ██║   "
+    echo "██║      ██╔     ██╔   ╚██████╔╝║██    ██║    ███████╗ ╚██████╗     ██║   "
+    echo "╚═╝      ██╔      ██╔            ╚█████╔╝     ╚══════╝  ╚═════╝     ╚═╝   "
+    echo -e "${NC}"
+    echo -e "${GREEN}Cyber Recon Toolkit by Abdulkarim Ramzi, Khaled Jaradeh, Rami Safi, Hasan Alqudra${NC}\n"
+}
+
+print_banner
+
+
 usage() {
     echo -e "${GREEN}Usage: $0 [-r domain] [-n target] [-v target] [-a target]${NC}"
     echo "  -r domain    Run Recon (Subdomain Enumeration)"
@@ -15,6 +30,7 @@ usage() {
     echo "  -a target    Run all: Recon + Services + Vulnerabilities"
     exit 1
 }
+
 
 # دالة لجمع Subdomains
 recon() {
