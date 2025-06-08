@@ -44,7 +44,9 @@ After execution, the script creates the following directory structure under your
     │   ├── subdomains.txt
     │   └── live.txt
     └── endpoint/
-        └── waybackurls.txt
+    |    └── waybackurls.txt
+    └── dns/
+    |    └── dns_records.txt    
 ```
 
 ### Usage
@@ -61,6 +63,7 @@ Available Options:
 | `-v target` | Scan for known vulnerabilities (Nmap scripts)         |
 | `-l domain` | Filter live subdomains using httpx                    |
 | `-a domain` | Run full recon: subdomains + scan + vulns + endpoints |
+| `-d domain` | Get DNS A, CNAME, and TXT records                     |
 
 
 ### Examples
@@ -91,4 +94,9 @@ Available Options:
 ##### Full recon on a target
 ```
 ./cyberrecon.sh -a example.com
+```
+
+##### find record dns
+```
+./cyberrecon.sh -d example.com
 ```
