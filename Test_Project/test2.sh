@@ -166,7 +166,7 @@ if [[ $# -lt 2 ]]; then
     usage
 fi
 
-while getopts ":r:n:v:a:w:l:" opt; do
+while getopts ":r:n:v:a:w:l:d:" opt; do
     case $opt in
         r)
             recon "$OPTARG"
