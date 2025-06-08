@@ -65,22 +65,30 @@ Available Options:
 
 ### Examples
 
+##### Subdomain enumeration
 ```
-# Subdomain enumeration
-bash cyberrecon.sh -r example.com
+./cyberrecon.sh -r example.com
+```
+##### Filter live subdomains
+```
+./cyberrecon.sh -l example.com
+```
+##### Gather endpoints from Wayback Machine
+```
+./cyberrecon.sh -w example.com
+```
 
-# Filter live subdomains
-bash cyberrecon.sh -l example.com
+##### Scan for open ports
+```
+./cyberrecon.sh -n 93.184.216.34
+```
 
-# Gather endpoints from Wayback Machine
-bash cyberrecon.sh -w example.com
+##### Find known vulnerabilities
+```
+./cyberrecon.sh -v 93.184.216.34
+```
 
-# Scan for open ports
-bash cyberrecon.sh -n 93.184.216.34
-
-# Find known vulnerabilities
-bash cyberrecon.sh -v 93.184.216.34
-
-# Full recon on a target
-bash cyberrecon.sh -a example.com
+##### Full recon on a target
+```
+./cyberrecon.sh -a example.com
 ```
