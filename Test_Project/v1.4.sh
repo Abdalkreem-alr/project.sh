@@ -106,6 +106,7 @@ gather_endpoints() {
     domain=$1
     echo -e "${GREEN}[+] Gathering endpoints for $domain using waybackurls and gau...${NC}"
 
+    # تحقق من توفر الأدوات
     if ! command -v waybackurls &>/dev/null; then
         echo -e "${RED}[-] waybackurls not found. Please install it.${NC}"
         return 1
@@ -116,38 +117,53 @@ gather_endpoints() {
     output_file="$output_dir/waybackurls.txt"
     mkdir -p "$output_dir"
 
+    # التحقق من ملف subdomains
+    if [[ ! -f "$subdomains_file" || ! -s "$subdomains_file" ]]; then
+        echo -e "${YELLOW}[!] Subdomains file missing or empty for $domain.${NC}"
+        read -p "❓ Do you want to run subdomain_enum now? (y/n): " confirm
+        if [[ $confirm == "y" || $confirm == "Y" ]]; then
+            subdomain_enum "$domain"
+        else
+            echo -e "${RED}[-] Operation cancelled. Please run '-r' first to collect subdomains.${NC}"
+            return 1
+        fi
+    fi
+
+    # إعادة التحقق بعد تشغيل subdomain_enum
     if [[ ! -s "$subdomains_file" ]]; then
-        echo -e "${RED}[-] Subdomains file not found or empty: $subdomains_file${NC}"
+        echo -e "${RED}[-] Still no subdomains found after running subdomain_enum. Aborting.${NC}"
         return 1
     fi
 
     echo -e "${GREEN}[*] Fetching URLs from $(wc -l < "$subdomains_file") subdomains...${NC}"
-
     cat "$subdomains_file" | waybackurls > "$output_file"
 
+    # دمج مع gau إن وجدت
     if command -v gau &>/dev/null; then
         cat "$subdomains_file" | gau --threads 50 >> "$output_file"
         sort -u "$output_file" -o "$output_file"
         echo -e "${GREEN}[+] Merged with gau results.${NC}"
     fi
 
-    echo -e "${GREEN}[+] Filtering results...${NC}"
+    # تصفية الملفات الغير مهمة
     grep -vE '\.(jpg|jpeg|png|gif|svg|css|woff|woff2|ttf|eot|ico)$' "$output_file" | sort -u > "$output_dir/filtered.txt"
 
-    echo -e "${GREEN}[+] Splitting by file type...${NC}"
+    # تقسيم حسب النوع
     grep '\.js' "$output_file" > "$output_dir/js.txt"
     grep '\.php' "$output_file" > "$output_dir/php.txt"
     grep '\.aspx\|\.asp' "$output_file" > "$output_dir/aspx.txt"
     grep -E '\.json|\.xml' "$output_file" > "$output_dir/api.txt"
 
-    echo -e "${GREEN}[+] Extracting parameters...${NC}"
+    # استخراج المعاملات
     cat "$output_file" | grep '?' | cut -d '?' -f2 | cut -d '&' -f1 | cut -d '=' -f1 | sort -u > "$output_dir/parameters.txt"
 
+    # طباعة الإحصائيات
     count=$(wc -l < "$output_file")
     filtered=$(wc -l < "$output_dir/filtered.txt")
     echo -e "${GREEN}[+] Total endpoints: $count | Filtered: $filtered${NC}"
     echo -e "${GREEN}[+] Saved to $output_dir${NC}"
 }
+
 
 
 
