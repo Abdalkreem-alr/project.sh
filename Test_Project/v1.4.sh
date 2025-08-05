@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# ألوان للإخراج
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
@@ -33,7 +32,6 @@ usage() {
 }
 
 
-# دالة لجمع Subdomains
 subdomain_enum() {
     domain=$1
     echo -e "${GREEN}[+] Running Subdomain Enumeration on $domain using subfinder and crt.sh...${NC}"
@@ -69,6 +67,7 @@ subdomain_enum() {
     rm -f "$output_dir/subfinder.txt" "$output_dir/crt.txt"
 }
 
+
 filter_live_domains() {
     domain=$1
     input_file=~/recon/$domain/subdomain/subdomains.txt
@@ -102,6 +101,8 @@ filter_live_domains() {
     count=$(wc -l < "$output_file")
     echo -e "${GREEN}[+] Found $count live domains. Results saved to $output_file${NC}"
 }
+
+
 gather_endpoints() {
     domain=$1
     echo -e "${GREEN}[+] Gathering endpoints for $domain using waybackurls and gau...${NC}"
@@ -117,8 +118,8 @@ gather_endpoints() {
     output_file="$output_dir/waybackurls.txt"
     mkdir -p "$output_dir"
 
-    # التحقق من ملف subdomains
-    if [[ ! -f "$subdomains_file" || ! -s "$subdomains_file" ]]; then
+
+     if [[ ! -f "$subdomains_file" || ! -s "$subdomains_file" ]]; then
         echo -e "${YELLOW}[!] Subdomains file missing or empty for $domain.${NC}"
         read -p "❓ Do you want to run subdomain_enum now? (y/n): " confirm
         if [[ $confirm == "y" || $confirm == "Y" ]]; then
@@ -129,7 +130,7 @@ gather_endpoints() {
         fi
     fi
 
-    # إعادة التحقق بعد تشغيل subdomain_enum
+
     if [[ ! -s "$subdomains_file" ]]; then
         echo -e "${RED}[-] Still no subdomains found after running subdomain_enum. Aborting.${NC}"
         return 1
@@ -145,19 +146,19 @@ gather_endpoints() {
         echo -e "${GREEN}[+] Merged with gau results.${NC}"
     fi
 
-    # تصفية الملفات الغير مهمة
+    
     grep -vE '\.(jpg|jpeg|png|gif|svg|css|woff|woff2|ttf|eot|ico)$' "$output_file" | sort -u > "$output_dir/filtered.txt"
 
-    # تقسيم حسب النوع
+    
     grep '\.js' "$output_file" > "$output_dir/js.txt"
     grep '\.php' "$output_file" > "$output_dir/php.txt"
     grep '\.aspx\|\.asp' "$output_file" > "$output_dir/aspx.txt"
     grep -E '\.json|\.xml' "$output_file" > "$output_dir/api.txt"
 
-    # استخراج المعاملات
+    
     cat "$output_file" | grep '?' | cut -d '?' -f2 | cut -d '&' -f1 | cut -d '=' -f1 | sort -u > "$output_dir/parameters.txt"
 
-    # طباعة الإحصائيات
+    
     count=$(wc -l < "$output_file")
     filtered=$(wc -l < "$output_dir/filtered.txt")
     echo -e "${GREEN}[+] Total endpoints: $count | Filtered: $filtered${NC}"
@@ -167,14 +168,14 @@ gather_endpoints() {
 
 
 
-# دالة لفحص الخدمات
+
 scan_services() {
     target=$1
     echo -e "${GREEN}[+] Scanning $target for open ports and services...${NC}"
     nmap -sV "$target"
 }
 
-# اضافة دالة ال DNS وذلك لتسهيل معرفة ال IP Origin وايضا لمعرفة استغلال ثغرة ال subdomain tackeover 
+
 
 dns_records() {
     domain=$1
@@ -200,14 +201,14 @@ dns_records() {
 
     echo -e "${GREEN}[+] DNS records saved to $output_file${NC}"
 }
-# دالة للثغرات
+
 find_vulnerabilities() {
     target=$1
     echo -e "${GREEN}[+] Scanning $target for known vulnerabilities...${NC}"
     nmap -sV --script vuln "$target"
 }
 
-# التحقق من المعطيات
+
 if [[ $# -lt 2 ]]; then
     usage
 fi
