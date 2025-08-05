@@ -107,7 +107,7 @@ gather_endpoints() {
     domain=$1
     echo -e "${GREEN}[+] Gathering endpoints for $domain using waybackurls and gau...${NC}"
 
-    # تحقق من توفر الأدوات
+    
     if ! command -v waybackurls &>/dev/null; then
         echo -e "${RED}[-] waybackurls not found. Please install it.${NC}"
         return 1
@@ -139,7 +139,7 @@ gather_endpoints() {
     echo -e "${GREEN}[*] Fetching URLs from $(wc -l < "$subdomains_file") subdomains...${NC}"
     cat "$subdomains_file" | waybackurls > "$output_file"
 
-    # دمج مع gau إن وجدت
+    
     if command -v gau &>/dev/null; then
         cat "$subdomains_file" | gau --threads 50 >> "$output_file"
         sort -u "$output_file" -o "$output_file"
@@ -167,13 +167,31 @@ gather_endpoints() {
 
 
 
-
-
 scan_services() {
-    target=$1
-    echo -e "${GREEN}[+] Scanning $target for open ports and services...${NC}"
-    nmap -sV "$target"
+    full_subdomain=$1
+    root_domain=$(echo "$full_subdomain" | rev | cut -d '.' -f1-2 | rev)  
+    output_dir=~/recon/$root_domain/scan
+    output_file="$output_dir/naabu_$(echo $full_subdomain | cut -d '.' -f1).txt"
+
+    mkdir -p "$output_dir"
+
+    echo -e "${GREEN}[+] Scanning open ports on $full_subdomain using Naabu...${NC}"
+
+    if ! command -v naabu &>/dev/null; then
+        echo -e "${RED}[-] naabu not found. Please install it.${NC}"
+        return 1
+    fi
+
+    naabu -host "$full_subdomain" -silent -o "$output_file"
+
+    if [[ ! -s "$output_file" ]]; then
+        echo -e "${RED}[-] No open ports found on $full_subdomain.${NC}"
+    else
+        echo -e "${GREEN}[+] Naabu scan completed. Results saved to $output_file${NC}"
+        echo -e "${GREEN}[+] Sample results:${NC}"
+    fi
 }
+
 
 
 
@@ -202,11 +220,7 @@ dns_records() {
     echo -e "${GREEN}[+] DNS records saved to $output_file${NC}"
 }
 
-find_vulnerabilities() {
-    target=$1
-    echo -e "${GREEN}[+] Scanning $target for known vulnerabilities...${NC}"
-    nmap -sV --script vuln "$target"
-}
+
 
 
 if [[ $# -lt 2 ]]; then
