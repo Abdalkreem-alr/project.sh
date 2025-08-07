@@ -26,6 +26,8 @@ usage() {
     echo "  -l domain    Filter live domains using httpx"
     echo "  -n domain    Scan for open ports "
     echo "  -d domain    Get DNS A, CNAME, and TXT records"
+    echo "  -h help      Show this help message"
+
     exit 1
 }
 
@@ -226,7 +228,7 @@ if [[ $# -lt 2 ]]; then
     usage
 fi
 
-while getopts ":r:n:w:l:d:" opt; do
+while getopts ":r:n:w:l:d:h" opt; do
     case $opt in
         r)
             subdomain_enum "$OPTARG"
@@ -244,9 +246,12 @@ while getopts ":r:n:w:l:d:" opt; do
         d)
             dns_records "$OPTARG"
             ;;
-      
+        h)
+            usage
+            ;;
         *)
             usage
             ;;
+      
     esac
 done
