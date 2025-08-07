@@ -168,7 +168,7 @@ gather_endpoints() {
 scan_services() {
     full_subdomain=$1
     safe_name=$(echo "$full_subdomain" | sed 's/\./_/g')
-    output_dir=~/recon/scan/$safe_name
+    output_dir=~/recon/scan_service/$safe_name
     output_file="$output_dir/naabu.txt"
 
     mkdir -p "$output_dir"
