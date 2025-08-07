@@ -20,7 +20,7 @@ print_banner
 
 
 usage() {
-    echo -e "${GREEN}Usage: $0 [-r domain] [-n domain]  [-l domain] [-w domain] [-d domain] ${NC}"
+    echo -e "${GREEN}Usage: $0 [-r domain] [-n domain]  [-l domain] [-w domain] [-d domain] [-h help]${NC}"
     echo "  -r domain    Run subdomain Enumeration"
     echo "  -w domain    scan endpoint"
     echo "  -l domain    Filter live domains using httpx"
