@@ -9,7 +9,7 @@ Abdulkarim Ramzi, Khaled Jaradeh, Rami Safi, Hasan Alqudra
 
 ## 🚀 Description
 
-Cyber Recon Toolkit is a Bash script that automates common reconnaissance tasks during penetration testing. It includes subdomain enumeration, port and service scanning, vulnerability detection, and endpoint discovery using tools like `subfinder`, `httpx`, `waybackurls`, and `naabu`.
+Cyber Recon Toolkit is a Bash script that automates common reconnaissance tasks during penetration testing. It includes subdomain enumeration, port and service scanning,  and endpoint discovery using tools like `subfinder`, `httpx`, `waybackurls`, and `naabu`.
 
 ---
 ## 📦 Requirements
@@ -20,7 +20,7 @@ Make sure the following tools are installed on your system:
 - [jq](https://stedolan.github.io/jq/)
 - [httpx](https://github.com/projectdiscovery/httpx)
 - [waybackurls](https://github.com/tomnomnom/waybackurls)
-- [nmap](https://nmap.org/)
+- [naabu](https://github.com/projectdiscovery/naabu)/)
 - `dig` (usually comes with the `dnsutils` package)
 
 ### Installation example (Ubuntu/Debian):
@@ -30,6 +30,7 @@ sudo apt install -y nmap dnsutils jq
 go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
 go install -v github.com/tomnomnom/waybackurls@latest
+go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 ```
 
 
@@ -62,7 +63,7 @@ Available Options:
 | ----------- | ----------------------------------------------------- |
 | `-r domain` | Run subdomain enumeration using subfinder + crt.sh    |
 | `-w domain` | Gather historical endpoints using Wayback Machine     |
-| `-n target` | Scan open ports and services using Nmap               |
+| `-n target` | Scan open ports and services using naabu              |
 | `-l domain` | Filter live subdomains using httpx                    |
 | `-d domain` | Get DNS A, CNAME, and TXT records                     |
 | `-h `       | help                                                  |
@@ -90,5 +91,5 @@ Available Options:
 
 ##### find record dns
 ```
-./cyberrecon.sh -d example.com
+./RScan.sh -d example.com
 ```
